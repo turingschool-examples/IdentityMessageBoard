@@ -1,6 +1,6 @@
 # IdentityMessageBoard
 
-This repo is a starting point for the [Launch Authentication Lesson](launch.turing.edu/module5/Lessons/Week3/Authentication).
+This repo is a starting point for the [Launch Authentication Lesson](launch.turing.edu/module5/lessons/Week3/Authentication).
 
 ## Setup
 
