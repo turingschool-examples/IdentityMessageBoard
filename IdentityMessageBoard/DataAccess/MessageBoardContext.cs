@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IdentityMessageBoard.DataAccess
 {
-    public class MessageBoardContext : IdentityDbContext
+    public class MessageBoardContext : IdentityDbContext<ApplicationUser>
     {
         public DbSet<Message> Messages { get; set; }
 
