@@ -2,6 +2,11 @@ using IdentityMessageBoard.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using IdentityMessageBoard.Models;
+using Serilog;
+
+Log.Logger = new LoggerConfiguration().WriteTo.Console().CreateLogger();
+
+Log.Information("Starting Web Application");
 
 var builder = WebApplication.CreateBuilder(args);
 
