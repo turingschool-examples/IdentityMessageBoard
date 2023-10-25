@@ -7,6 +7,9 @@
         <tr>
             <th scope="col">Content</th>
             <th scope="col">Expiration Date</th>
+            <th scope="col">Author</th>
+            <th></th>
+            <th></th>
         </tr>
     </thead>
     @foreach (var message in Model["active"])
@@ -14,6 +17,12 @@
         <tr>
             <td>@message.Content</td>
             <td>@message.ExpirationDate.ToShortDateString()</td>
+            <td>@message.Author.Email</td>
+            @if (User.IsInRole("SuperUser"))
+            {              
+                <td><a class="btn btn-danger" asp-controller="Messages" asp-action="Delete" asp-route-messageId = "@message.Id" role="button">Delete</a></td>
+                <td></td>
+            }
         </tr>
     }
 </table>
@@ -25,6 +34,9 @@
         <tr>
             <th scope="col">Content</th>
             <th scope="col">Expiration Date</th>
+            <th scope="col">Author</th>
+            <th></th>
+            <th></th>
         </tr>
     </thead>
     @foreach (var message in Model["expired"])
@@ -32,6 +44,10 @@
         <tr>
             <td>@message.Content</td>
             <td>@message.ExpirationDate.ToShortDateString()</td>
+            <td>@message.Author.Email</td>
+            <td></td>
+            <td></td>
+
         </tr>
     }
 </table>

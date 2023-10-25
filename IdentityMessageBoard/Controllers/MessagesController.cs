@@ -1,6 +1,7 @@
 ﻿using IdentityMessageBoard.DataAccess;
 using IdentityMessageBoard.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
@@ -10,14 +11,18 @@ namespace IdentityMessageBoard.Controllers
     public class MessagesController : Controller
     {
         private readonly MessageBoardContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public MessagesController(MessageBoardContext context)
+        public MessagesController(MessageBoardContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         public IActionResult Index()
         {
+            var userId = _userManager.GetUserId(User);
+
             var messages = _context.Messages
                 .Include(m => m.Author)
                 .OrderBy(m => m.ExpirationDate)
@@ -27,7 +32,7 @@ namespace IdentityMessageBoard.Controllers
             return View(messages);
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,SuperUser")]
         public IActionResult AllMessages()
         {
             var allMessages = new Dictionary<string, List<Message>>()
@@ -36,7 +41,20 @@ namespace IdentityMessageBoard.Controllers
                 { "expired", new List<Message>() }
             };
 
-            foreach (var message in _context.Messages)
+            List<Message> messages;
+
+            if ( User.IsInRole("SuperUser") )
+            {
+                messages = _context.Messages
+                    .Include(m => m.Author)
+                    .Where(m => m.Author.Id == _userManager.GetUserId(User)).ToList();
+            }
+            else
+            {
+                messages = _context.Messages.Include(m => m.Author).ToList();
+            }
+            
+            foreach (var message in messages)
             {
                 if (message.IsActive())
                 {
@@ -74,6 +92,16 @@ namespace IdentityMessageBoard.Controllers
             _context.SaveChanges();
 
             return RedirectToAction("Index");
+        }
+
+        [Authorize(Roles = "SuperUser")]
+        public IActionResult Delete(int messageId)
+        {
+            var message = _context.Messages.Find(messageId);
+            _context.Messages.Remove(message);
+            _context.SaveChanges();
+
+            return RedirectToAction("AllMessages");
         }
     }
 }
