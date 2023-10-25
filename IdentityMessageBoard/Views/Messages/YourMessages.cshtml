@@ -1,0 +1,53 @@
+﻿@model IDictionary<string, List<Message>>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+<h2>Active Messages</h2>
+
+<table class="table mt-5">
+    <thead>
+        <tr>
+            <th scope="col">Content</th>
+            <th scope="col">Expiration Date</th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    @foreach (var message in Model["active"])
+    {
+        <tr>
+            <td>@message.Content</td>
+            <td>@message.ExpirationDate.ToShortDateString()</td>
+            <td> 
+                <form method="post" action="/messages/@message.Id/delete">
+                    <button type="Submit"><i class="fa fa-trash"></i></button>
+                </form>
+                <a href="/messages/@message.Id/edit">Edit</a>
+            </td>
+        </tr>
+    }
+</table>
+
+<h2>Expired Messages</h2>
+
+<table class="table mt-5">
+    <thead>
+        <tr>
+            <th scope="col">Content</th>
+            <th scope="col">Expiration Date</th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    @foreach (var message in Model["expired"])
+    {
+        <tr>
+            <td>@message.Content</td>
+            <td>@message.ExpirationDate.ToShortDateString()</td>
+            <td>
+                <form method="post" action="/messages/@message.Id/delete">
+                    <button type="Submit"><i class="fa fa-trash"></i></button>
+                </form>
+                <a href="/messages/@message.Id/edit">Edit</a>
+            </td>
+        </tr>
+    }
+</table>
