@@ -41,20 +41,7 @@ namespace IdentityMessageBoard.Controllers
                 { "expired", new List<Message>() }
             };
 
-            List<Message> messages;
-
-            if ( User.IsInRole("SuperUser") )
-            {
-                messages = _context.Messages
-                    .Include(m => m.Author)
-                    .Where(m => m.Author.Id == _userManager.GetUserId(User)).ToList();
-            }
-            else
-            {
-                messages = _context.Messages.Include(m => m.Author).ToList();
-            }
-            
-            foreach (var message in messages)
+            foreach (var message in RoleRelatedMessages())
             {
                 if (message.IsActive())
                 {
@@ -65,7 +52,6 @@ namespace IdentityMessageBoard.Controllers
                     allMessages["expired"].Add(message);
                 }
             }
-
 
             return View(allMessages);
         }
@@ -102,6 +88,24 @@ namespace IdentityMessageBoard.Controllers
             _context.SaveChanges();
 
             return RedirectToAction("AllMessages");
+        }
+
+        private List<Message> RoleRelatedMessages()
+        {
+            List<Message> messages;
+
+            if (User.IsInRole("SuperUser"))
+            {
+                messages = _context.Messages
+                    .Include(m => m.Author)
+                    .Where(m => m.Author.Id == _userManager.GetUserId(User)).ToList();
+            }
+            else
+            {
+                messages = _context.Messages.Include(m => m.Author).ToList();
+            }
+
+            return messages;
         }
     }
 }
