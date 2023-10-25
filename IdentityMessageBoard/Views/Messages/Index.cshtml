@@ -1,14 +1,19 @@
-﻿@model IEnumerable<Message>
+﻿@using Microsoft.AspNetCore.Identity;
+@model IEnumerable<Message>
+@inject SignInManager<ApplicationUser> SignInManager
 
 <h2>Active Messages</h2>
-
-<a asp-controller="Messages" asp-action="New"><button>Add New Message</button></a>
+@if (SignInManager.IsSignedIn(User))
+{
+    <a asp-controller="Messages" asp-action="New"><button>Add New Message</button></a>
+}
 
 <table class="table mt-5">
     <thead>
         <tr>
             <th scope="col">Content</th>
             <th scope="col">Expiration Date</th>
+            <th scope="col">Author</th>
         </tr>
     </thead>
     @foreach (var message in Model)
@@ -16,6 +21,14 @@
         <tr>
             <td>@message.Content</td>
             <td>@message.ExpirationDate.ToShortDateString()</td>
+            @if (message.Author is null)
+            {
+                <td>Anonymous</td>
+            }
+            else
+            {
+                <td>@message.Author.Email</td>
+            }
         </tr>
     }
 </table>
