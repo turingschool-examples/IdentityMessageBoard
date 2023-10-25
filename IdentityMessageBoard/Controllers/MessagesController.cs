@@ -83,7 +83,16 @@ namespace IdentityMessageBoard.Controllers
         [Authorize(Roles = "SuperUser")]
         public IActionResult Delete(int messageId)
         {
-            var message = _context.Messages.Find(messageId);
+            var message = _context.Messages
+                .Include(m => m.Author)
+                .Where(m => m.Id == messageId)
+                .First();
+
+            if (message is null || message.Author.Id != _userManager.GetUserId(User))
+            {
+                return BadRequest();
+            }
+
             _context.Messages.Remove(message);
             _context.SaveChanges();
 
